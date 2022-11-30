@@ -6,7 +6,7 @@ networks:
 
 services:
   stormspotter-neo4j:
-    image: neo4j:latest
+    image: neo4j:4.4
     restart: unless-stopped
     networks:
       - stormspotter-network
@@ -33,6 +33,10 @@ services:
     tty: true
     build:
       context: backend
+      args:
+        arg_proxy: $http_proxy
+        arg_noproxy: $no_proxy
+        arg_pipindexurl: $PIP_INDEX_URL
     depends_on:
       - stormspotter-neo4j
     networks:

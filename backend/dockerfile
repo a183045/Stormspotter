@@ -1,5 +1,18 @@
 FROM python:3.8-slim-buster as compile-stage
 
+ARG arg_proxy
+ARG arg_noproxy
+ARG arg_pipindexurl
+
+ENV http_proxy=$arg_proxy
+ENV HTTP_PROXY=$arg_proxy
+ENV https_proxy=$arg_proxy
+ENV HTTPS_PROXY=$arg_proxy
+ENV no_proxy=$arg_noproxy
+ENV NO_PROXY=$arg_noproxy
+ENV PIP_CONFIG_FILE=/backend/pip.conf
+
+
 ENV PYTHONFAULTHANDLER=1 \
   PYTHONHASHSEED=random \
   PYTHONUNBUFFERED=1 \
@@ -8,7 +21,11 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_NO_CACHE_DIR=1
 
 WORKDIR /backend
-RUN python -m pip install shiv
+ADD http://crl3/Progressive%20PKI%20G3.ca-bundle.crt ca-bundle.crt
+RUN cp ca-bundle.crt /usr/local/share/ca-certificates/ && update-ca-certificates
+COPY pip.conf pip.conf
+RUN sh -c "echo index_url=${arg_pipindexurl} >> pip.conf" && \
+  python -m pip install shiv
 
 COPY . .
 RUN python build_backend.py

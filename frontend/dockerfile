@@ -2,6 +2,8 @@ FROM node:12-alpine
 ENV VUE_APP_UPLOAD_URL=http://stormspotter-backend:9090/api/upload
 
 WORKDIR /usr/src/app
+ADD http://crl3/Progressive%20PKI%20G3.ca-bundle.crt ca-bundle.crt
+ENV NODE_EXTRA_CA_CERTS=ca-bundle.crt
 RUN npm install -g @quasar/cli
 
 COPY dist/spa .
